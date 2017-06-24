@@ -10,11 +10,27 @@ import (
 	"path/filepath"
 
 	"github.com/dpastoor/goutils"
+	flag "github.com/ogier/pflag"
 	"github.com/spf13/afero"
 	"github.com/unidoc/unidoc/pdf"
 )
 
+// VERSION is the version
+const VERSION = "1.0.0"
+
+var (
+	ver   bool
+	debug bool
+)
+
 func main() {
+	flag.BoolVarP(&ver, "version", "v", false, "print version")
+	flag.BoolVarP(&debug, "debug", "d", false, "print debug information such as the files that will be combined")
+	flag.Parse()
+	if ver {
+		fmt.Print(VERSION)
+		os.Exit(0)
+	}
 	if len(os.Args) < 3 {
 		fmt.Printf("Requires at least 3 arguments: output_path regex \n")
 		fmt.Printf("Usage: go run pdf_merge.go output.pdf \n")
@@ -29,8 +45,10 @@ func main() {
 		fmt.Printf("error compiling regex: %s", err)
 		os.Exit(1)
 	}
-	fmt.Println("merging files:")
-	fmt.Println(pdfFiles)
+	if debug {
+		fmt.Println("merging files:")
+		fmt.Println(pdfFiles)
+	}
 	outputPath := os.Args[1]
 
 	// Sanity check the input arguments.
@@ -45,8 +63,11 @@ func main() {
 
 func mergePdf(inputPaths []string, outputPath string) error {
 	pdfWriter := pdf.NewPdfWriter()
-
+	outputFilename := filepath.Base(outputPath)
 	for _, inputPath := range inputPaths {
+		if inputPath == outputFilename {
+			continue
+		}
 		f, err := os.Open(inputPath)
 		if err != nil {
 			return err
