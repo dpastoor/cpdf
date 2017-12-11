@@ -12,11 +12,11 @@ import (
 	"github.com/dpastoor/goutils"
 	flag "github.com/ogier/pflag"
 	"github.com/spf13/afero"
-	"github.com/unidoc/unidoc/pdf"
+	pdf "github.com/unidoc/unidoc/pdf/model"
 )
 
 // VERSION is the version
-const VERSION = "1.0.0"
+const VERSION = "1.0.1"
 
 var (
 	ver   bool
@@ -33,7 +33,7 @@ func main() {
 	}
 	if len(os.Args) < 3 {
 		fmt.Printf("Requires at least 3 arguments: output_path regex \n")
-		fmt.Printf("Usage: go run pdf_merge.go output.pdf \n")
+		fmt.Printf("Usage: cpdf  <output>  <regex> \n")
 		os.Exit(1)
 	}
 	AppFs := afero.NewOsFs()
